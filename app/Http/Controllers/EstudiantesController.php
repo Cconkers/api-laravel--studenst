@@ -29,7 +29,7 @@ class EstudiantesController extends Controller
     public function store(Request $request){        
         // Validar
         $datos_validados = $request->validate([
-            'nombre' => 'min:3',
+            'name' => 'required',
             'email' => 'min:8',
             'foto' => 'required'
         ]);
@@ -51,7 +51,7 @@ class EstudiantesController extends Controller
             return['error' => 'Estudiante no encontrado'];
         }
         $datos_validados = $request->validate([
-            'nombre' => 'min:3',
+            'name' => 'min:3',
             'email' => 'min:8',
         ]);
         $estudiante->update($datos_validados);

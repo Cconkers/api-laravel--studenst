@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Users;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -20,7 +21,10 @@ class AuthController extends Controller
         
                 $token= $usuarioLogeado->createToken('TokenUsuario')->plainTextToken;
                 
-                return ['token' => $token];
+                return [
+                    'Mensaje' => 'Logeado Correctamente',
+                    'Usuario' => $usuarioLogeado,
+                    'token' => $token];
             }else{
                return ['Error' => 'Nombre o contraseña no válidos'];
          }
@@ -29,8 +33,45 @@ class AuthController extends Controller
 
 
 
-    // public function register(Request $request){
+     public function register(Request $request){
 
-    // }
+        $credentials = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'confirm_password' => 'required'
+        ]);
+
+        //Encriptar contraseña.
+        $credentials['password'] = bcrypt($credentials['password']);
+
+        //Crear nuevo usuario.
+        $usuarioNuevo = User::create($credentials);
+
+        //Crear el token para el nuevo usuario.
+        $token = $usuarioNuevo->createToken('TokenUsuario')->plainTextToken;
+
+        //Respuesta final.
+        return [
+            'mensaje' => 'Usuario creado correctamente',
+            'usuario' => $usuarioNuevo,
+            'token' => $token
+        ];
+    }
+
+
+
+     public function logout(Request $request){
+
+        //Usuario logeado -> logout.
+        $usuarioLogeado = Auth::User()->tokens()->delete();
+
+
+        //Respuesta final.
+        return [
+            'mensaje' => 'Desconectado correctamente',
+            'usuario' => $usuarioLogeado,
+        ];
+    }
 
 }
